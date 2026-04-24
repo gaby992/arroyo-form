@@ -199,15 +199,19 @@ export default function FormPage() {
         <div
           style={{
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: '3rem',
+            gap: '0.75rem',
             maxWidth: 600,
             width: '100%',
             margin: '0 auto 3rem',
           }}
         >
-          <img src="/logo.png" alt="Adolfo Arroyo Solutions" style={{ height: 48 }} />
+          <img
+            src="/logo.png"
+            alt="Adolfo Arroyo Solutions"
+            style={{ height: 120, display: 'block' }}
+          />
           <span style={{ fontSize: '0.85rem', color: '#555' }}>
             {step} de {TOTAL_STEPS}
           </span>

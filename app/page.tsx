@@ -16,6 +16,12 @@ export default function Home() {
       }}
     >
       <div style={{ maxWidth: 580, width: '100%' }}>
+        <img
+          src="/logo.png"
+          alt="Adolfo Arroyo Solutions"
+          style={{ height: 120, display: 'block', margin: '0 auto 2rem' }}
+        />
+
         <p
           style={{
             fontSize: '0.78rem',
