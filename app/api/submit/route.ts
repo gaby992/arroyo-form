@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
 
   const required: (keyof LeadFormData)[] = [
     'nombre_negocio', 'giro', 'ciudad', 'descripcion',
+    'problema', 'pct_perdidas', 'tipo_producto',
     'canales', 'funciones', 'nombre_contacto', 'whatsapp', 'email', 'fuente',
   ];
 
@@ -48,6 +49,9 @@ export async function POST(req: NextRequest) {
     giro: body.giro,
     ciudad: body.ciudad,
     descripcion: body.descripcion,
+    problema: body.problema,
+    pct_perdidas: body.pct_perdidas,
+    tipo_producto: body.tipo_producto,
     canales: body.canales,
     funciones: body.funciones,
     volumen_mensajes: body.volumen_mensajes || null,

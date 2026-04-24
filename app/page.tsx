@@ -22,7 +22,7 @@ export default function Home() {
             fontWeight: 500,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: '#3b82f6',
+            color: '#1a6fd4',
             marginBottom: '1.2rem',
           }}
         >
@@ -41,7 +41,7 @@ export default function Home() {
           }}
         >
           Tu negocio,{' '}
-          <span style={{ color: '#3b82f6' }}>en piloto automático</span>
+          <span style={{ color: '#1a6fd4' }}>en piloto automático</span>
         </h1>
 
         <p
@@ -62,7 +62,7 @@ export default function Home() {
         </Link>
 
         <p style={{ marginTop: '2rem', fontSize: '0.82rem', color: '#555' }}>
-          Más de 30 negocios en México ya automatizaron su atención con nosotros.
+          Más de 100 empresas en USA y México ya automatizaron su atención con nosotros.
         </p>
       </div>
     </main>

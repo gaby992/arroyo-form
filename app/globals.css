@@ -4,11 +4,11 @@
   --bg: #0a0a0a;
   --card: #141414;
   --border: #242424;
-  --accent: #3b82f6;
+  --accent: #1a6fd4;
   --text: #f0f0f0;
   --muted: #888;
-  --selected-bg: #162036;
-  --focus-glow: rgba(59, 130, 246, 0.15);
+  --selected-bg: #111e35;
+  --focus-glow: rgba(26, 111, 212, 0.15);
 }
 
 * {
@@ -46,7 +46,7 @@ body::after {
   transform: translateX(-50%);
   width: 600px;
   height: 400px;
-  background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(26, 111, 212, 0.12) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -64,8 +64,8 @@ body::after {
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #2563eb, #60a5fa);
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+  background: linear-gradient(90deg, #1557b0, #1a6fd4);
+  box-shadow: 0 0 8px rgba(26, 111, 212, 0.6);
   transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -112,7 +112,7 @@ body::after {
 }
 
 .radio-card:hover {
-  border-color: rgba(59, 130, 246, 0.5);
+  border-color: rgba(26, 111, 212, 0.5);
 }
 
 .radio-card.selected {
@@ -147,7 +147,7 @@ body::after {
 }
 
 .chip:hover:not(.disabled) {
-  border-color: rgba(59, 130, 246, 0.5);
+  border-color: rgba(26, 111, 212, 0.5);
 }
 
 .chip.selected {
@@ -181,14 +181,14 @@ body::after {
   border: none;
   border-radius: 100px;
   cursor: pointer;
-  box-shadow: 0 4px 24px rgba(59, 130, 246, 0.35);
+  box-shadow: 0 4px 24px rgba(26, 111, 212, 0.35);
   transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
   text-decoration: none;
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 6px 28px rgba(59, 130, 246, 0.45);
+  box-shadow: 0 6px 28px rgba(26, 111, 212, 0.45);
 }
 
 .btn-primary:disabled {

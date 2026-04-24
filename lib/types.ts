@@ -3,6 +3,9 @@ export interface LeadFormData {
   giro: string;
   ciudad: string;
   descripcion: string;
+  problema: string;
+  pct_perdidas: string;
+  tipo_producto: string;
   canales: string[];
   funciones: string[];
   volumen_mensajes: string;
@@ -22,6 +25,9 @@ export const initialFormData: LeadFormData = {
   giro: '',
   ciudad: '',
   descripcion: '',
+  problema: '',
+  pct_perdidas: '',
+  tipo_producto: '',
   canales: [],
   funciones: [],
   volumen_mensajes: '',

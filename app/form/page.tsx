@@ -8,7 +8,7 @@ import RadioCard from '@/components/ui/RadioCard';
 import Chip from '@/components/ui/Chip';
 import { formReducer, initialFormData } from '@/lib/types';
 
-const TOTAL_STEPS = 11;
+const TOTAL_STEPS = 12;
 
 const GIRO_OPTIONS = [
   'Comida / Restaurante',
@@ -20,6 +20,33 @@ const GIRO_OPTIONS = [
   'Hotel / Hospedaje',
   'Bienes raíces',
   'Otro',
+];
+
+const PROBLEMA_OPTIONS = [
+  'Tengo muchos leads y no doy abasto para atenderlos',
+  'Los clientes esperan mucho tiempo para recibir respuesta',
+  'Necesito atención 24/7 (incluidos fines de semana y festivos)',
+  'Necesito agendar citas automáticamente',
+  'Quiero automatizar cotizaciones y presupuestos',
+  'Quiero reducir costos de personal de atención',
+  'Responder preguntas repetitivas básicas',
+  'Necesito seguimiento automático de leads',
+  'Otro',
+];
+
+const PCT_PERDIDAS_OPTIONS = [
+  'Menos del 10%',
+  'Entre 10% y 30%',
+  'Entre 30% y 60%',
+  'Más del 60%',
+  'No lo sé',
+];
+
+const TIPO_PRODUCTO_OPTIONS = [
+  'Productos físicos',
+  'Servicios profesionales (consultoría, salud, educación, etc.)',
+  'Productos digitales (cursos, membresías, software)',
+  'Ambos, productos y servicios',
 ];
 
 const CANALES_OPTIONS = [
@@ -64,6 +91,8 @@ function isValidWhatsapp(phone: string) {
   return phone.replace(/[\s+\-()]/g, '').length >= 10;
 }
 
+const AUTO_ADVANCE_STEPS = [2, 5, 6, 7, 10, 12];
+
 export default function FormPage() {
   const router = useRouter();
   const [state, dispatch] = useReducer(formReducer, initialFormData);
@@ -91,13 +120,18 @@ export default function FormPage() {
       case 2: return state.giro.length > 0;
       case 3: return state.ciudad.trim().length > 0;
       case 4: return state.descripcion.trim().length >= 20;
-      case 5: return state.canales.length > 0;
-      case 6: return state.funciones.length > 0;
-      case 7: return true; // optional
-      case 8: return state.nombre_contacto.trim().length > 0;
-      case 9: return isValidWhatsapp(state.whatsapp);
-      case 10: return isValidEmail(state.email);
-      case 11: return state.fuente.length > 0;
+      case 5: return state.problema.length > 0;
+      case 6: return state.pct_perdidas.length > 0;
+      case 7: return state.tipo_producto.length > 0;
+      case 8: return state.canales.length > 0;
+      case 9: return state.funciones.length > 0;
+      case 10: return true;
+      case 11: return (
+        state.nombre_contacto.trim().length > 0 &&
+        isValidWhatsapp(state.whatsapp) &&
+        isValidEmail(state.email)
+      );
+      case 12: return state.fuente.length > 0;
       default: return true;
     }
   }, [step, state]);
@@ -138,9 +172,9 @@ export default function FormPage() {
     }
   }, [state, validate, triggerError, router]);
 
-  // Step 11 auto-advance after selection
+  // Step 12 auto-submits after fuente selection
   useEffect(() => {
-    if (step === 11 && state.fuente && !submitting) {
+    if (step === 12 && state.fuente && !submitting) {
       handleSubmit();
     }
   }, [state.fuente]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -173,16 +207,7 @@ export default function FormPage() {
             margin: '0 auto 3rem',
           }}
         >
-          <span
-            style={{
-              fontFamily: 'var(--font-syne)',
-              fontWeight: 700,
-              fontSize: '0.85rem',
-              color: '#3b82f6',
-            }}
-          >
-            Adolfo Arroyo Solutions
-          </span>
+          <img src="/logo.png" alt="Adolfo Arroyo Solutions" style={{ height: 48 }} />
           <span style={{ fontSize: '0.85rem', color: '#555' }}>
             {step} de {TOTAL_STEPS}
           </span>
@@ -199,7 +224,7 @@ export default function FormPage() {
             flex: 1,
           }}
         >
-          {/* Step 1 */}
+          {/* Step 1 — nombre_negocio */}
           {step === 1 && (
             <StepWrapper
               question="¿Cómo se llama tu negocio?"
@@ -216,7 +241,7 @@ export default function FormPage() {
             </StepWrapper>
           )}
 
-          {/* Step 2 */}
+          {/* Step 2 — giro */}
           {step === 2 && (
             <StepWrapper question="¿A qué se dedica tu negocio?">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
@@ -235,7 +260,7 @@ export default function FormPage() {
             </StepWrapper>
           )}
 
-          {/* Step 3 */}
+          {/* Step 3 — ciudad */}
           {step === 3 && (
             <StepWrapper
               question="¿En qué ciudad opera tu negocio?"
@@ -252,7 +277,7 @@ export default function FormPage() {
             </StepWrapper>
           )}
 
-          {/* Step 4 */}
+          {/* Step 4 — descripcion */}
           {step === 4 && (
             <StepWrapper
               question="Descríbenos tu negocio"
@@ -290,8 +315,65 @@ export default function FormPage() {
             </StepWrapper>
           )}
 
-          {/* Step 5 */}
+          {/* Step 5 — problema */}
           {step === 5 && (
+            <StepWrapper question="¿Qué problema específico quieres resolver?">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                {PROBLEMA_OPTIONS.map((opt) => (
+                  <RadioCard
+                    key={opt}
+                    label={opt}
+                    selected={state.problema === opt}
+                    onSelect={() => {
+                      dispatch({ type: 'SET_FIELD', field: 'problema', value: opt });
+                      setTimeout(advance, 120);
+                    }}
+                  />
+                ))}
+              </div>
+            </StepWrapper>
+          )}
+
+          {/* Step 6 — pct_perdidas */}
+          {step === 6 && (
+            <StepWrapper question="¿Qué porcentaje de esas conversaciones se pierden o quedan sin respuesta?">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                {PCT_PERDIDAS_OPTIONS.map((opt) => (
+                  <RadioCard
+                    key={opt}
+                    label={opt}
+                    selected={state.pct_perdidas === opt}
+                    onSelect={() => {
+                      dispatch({ type: 'SET_FIELD', field: 'pct_perdidas', value: opt });
+                      setTimeout(advance, 120);
+                    }}
+                  />
+                ))}
+              </div>
+            </StepWrapper>
+          )}
+
+          {/* Step 7 — tipo_producto */}
+          {step === 7 && (
+            <StepWrapper question="¿Qué vendes o promocionas?">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                {TIPO_PRODUCTO_OPTIONS.map((opt) => (
+                  <RadioCard
+                    key={opt}
+                    label={opt}
+                    selected={state.tipo_producto === opt}
+                    onSelect={() => {
+                      dispatch({ type: 'SET_FIELD', field: 'tipo_producto', value: opt });
+                      setTimeout(advance, 120);
+                    }}
+                  />
+                ))}
+              </div>
+            </StepWrapper>
+          )}
+
+          {/* Step 8 — canales */}
+          {step === 8 && (
             <StepWrapper
               question="¿Por qué canales te contactan tus clientes?"
               hint="Selecciona todos los que apliquen."
@@ -314,8 +396,8 @@ export default function FormPage() {
             </StepWrapper>
           )}
 
-          {/* Step 6 */}
-          {step === 6 && (
+          {/* Step 9 — funciones */}
+          {step === 9 && (
             <StepWrapper
               question="¿Qué quieres que haga tu agente?"
               hint="Elige hasta 3 funciones."
@@ -343,8 +425,8 @@ export default function FormPage() {
             </StepWrapper>
           )}
 
-          {/* Step 7 */}
-          {step === 7 && (
+          {/* Step 10 — volumen_mensajes (optional) */}
+          {step === 10 && (
             <StepWrapper
               question="¿Cuántos mensajes recibes al mes, aproximadamente?"
               hint="Opcional — nos ayuda a dimensionar tu agente."
@@ -365,58 +447,74 @@ export default function FormPage() {
             </StepWrapper>
           )}
 
-          {/* Step 8 */}
-          {step === 8 && (
-            <StepWrapper question="¿Cuál es tu nombre?">
-              <TextInput
-                value={state.nombre_contacto}
-                onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'nombre_contacto', value: v })}
-                onEnter={handleNext}
-                placeholder="Tu nombre completo"
-                error={error}
-                autoFocus
-              />
-            </StepWrapper>
-          )}
-
-          {/* Step 9 */}
-          {step === 9 && (
-            <StepWrapper
-              question={`Hola${state.nombre_contacto ? ' ' + state.nombre_contacto.split(' ')[0] : ''}! ¿Cuál es tu WhatsApp?`}
-              hint="Te contactaremos por aquí para agendar tu sesión gratuita."
-            >
-              <TextInput
-                value={state.whatsapp}
-                onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'whatsapp', value: v })}
-                onEnter={handleNext}
-                placeholder="+52 998 123 4567"
-                type="tel"
-                error={error}
-                autoFocus
-              />
-            </StepWrapper>
-          )}
-
-          {/* Step 10 */}
-          {step === 10 && (
-            <StepWrapper
-              question="¿Cuál es tu correo electrónico?"
-              hint="Te enviaremos un resumen de tu solicitud."
-            >
-              <TextInput
-                value={state.email}
-                onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'email', value: v })}
-                onEnter={handleNext}
-                placeholder="correo@ejemplo.com"
-                type="email"
-                error={error}
-                autoFocus
-              />
-            </StepWrapper>
-          )}
-
-          {/* Step 11 */}
+          {/* Step 11 — combined contact fields */}
           {step === 11 && (
+            <StepWrapper question="¿Cómo te contactamos?">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.85rem',
+                      color: '#666',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
+                    Nombre completo
+                  </label>
+                  <TextInput
+                    value={state.nombre_contacto}
+                    onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'nombre_contacto', value: v })}
+                    placeholder="Tu nombre completo"
+                    error={error && !state.nombre_contacto.trim()}
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.85rem',
+                      color: '#666',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
+                    WhatsApp
+                  </label>
+                  <TextInput
+                    value={state.whatsapp}
+                    onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'whatsapp', value: v })}
+                    placeholder="+52 998 123 4567"
+                    type="tel"
+                    error={error && !isValidWhatsapp(state.whatsapp)}
+                  />
+                </div>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.85rem',
+                      color: '#666',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
+                    Correo electrónico
+                  </label>
+                  <TextInput
+                    value={state.email}
+                    onChange={(v) => dispatch({ type: 'SET_FIELD', field: 'email', value: v })}
+                    onEnter={handleNext}
+                    placeholder="correo@ejemplo.com"
+                    type="email"
+                    error={error && !isValidEmail(state.email)}
+                  />
+                </div>
+              </div>
+            </StepWrapper>
+          )}
+
+          {/* Step 12 — fuente */}
+          {step === 12 && (
             <StepWrapper question="¿Cómo nos encontraste?">
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                 {FUENTE_OPTIONS.map((opt) => (
@@ -434,12 +532,12 @@ export default function FormPage() {
             </StepWrapper>
           )}
 
-          {/* CTA button (not shown on auto-advance steps) */}
-          {![2, 7, 11].includes(step) && (
+          {/* CTA button — hidden on auto-advance steps */}
+          {!AUTO_ADVANCE_STEPS.includes(step) && (
             <div style={{ marginTop: '2rem' }}>
               <button
                 className="btn-primary"
-                onClick={step === 11 ? handleSubmit : handleNext}
+                onClick={handleNext}
                 disabled={submitting}
                 style={{ minWidth: 180 }}
               >
@@ -448,32 +546,15 @@ export default function FormPage() {
                     <span className="spinner" />
                     Enviando...
                   </>
-                ) : step === TOTAL_STEPS ? (
-                  'Enviar solicitud →'
                 ) : (
                   'Continuar →'
                 )}
               </button>
-              {step === 7 && (
-                <button
-                  onClick={advance}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#555',
-                    fontSize: '0.85rem',
-                    cursor: 'pointer',
-                    marginLeft: '1rem',
-                  }}
-                >
-                  Omitir
-                </button>
-              )}
             </div>
           )}
 
-          {/* Skip for step 7 (auto-advance) */}
-          {step === 7 && (
+          {/* Skip for step 10 (volumen optional, auto-advance) */}
+          {step === 10 && (
             <div style={{ marginTop: '1.5rem' }}>
               <button
                 onClick={advance}
@@ -490,8 +571,8 @@ export default function FormPage() {
             </div>
           )}
 
-          {/* Submitting overlay for step 11 */}
-          {step === 11 && submitting && (
+          {/* Submitting overlay for step 12 */}
+          {step === 12 && submitting && (
             <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#888' }}>
               <span className="spinner" />
               <span style={{ fontSize: '0.9rem' }}>Enviando tu solicitud...</span>
