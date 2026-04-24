@@ -210,7 +210,7 @@ export default function FormPage() {
           <img
             src="/logo.png"
             alt="Adolfo Arroyo Solutions"
-            style={{ height: 120, display: 'block' }}
+            style={{ height: 120, display: 'block', mixBlendMode: 'screen' }}
           />
           <span style={{ fontSize: '0.85rem', color: '#555' }}>
             {step} de {TOTAL_STEPS}

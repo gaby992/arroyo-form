@@ -19,7 +19,7 @@ export default function Home() {
         <img
           src="/logo.png"
           alt="Adolfo Arroyo Solutions"
-          style={{ height: 120, display: 'block', margin: '0 auto 2rem' }}
+          style={{ height: 120, display: 'block', margin: '0 auto 2rem', mixBlendMode: 'screen' }}
         />
 
         <p
