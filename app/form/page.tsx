@@ -47,8 +47,10 @@ const TIPO_PRODUCTO_OPTIONS = [
   'Servicios profesionales (consultoría, salud, educación, etc.)',
   'Productos digitales (cursos, membresías, software)',
   'Ambos, productos y servicios',
-  'Alimentos y bebidas (restaurante, cafetería, etc.)',
+  'Otro / No estoy seguro — describe a qué se dedica tu negocio',
 ];
+
+const OTRO_TIPO_LABEL = 'Otro / No estoy seguro — describe a qué se dedica tu negocio';
 
 const CANALES_OPTIONS = [
   'WhatsApp',
@@ -102,6 +104,7 @@ export default function FormPage() {
   const [stepKey, setStepKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [referidoPor, setReferidoPor] = useState('');
+  const [otroProducto, setOtroProducto] = useState('');
   const errorTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const triggerError = useCallback(() => {
@@ -173,6 +176,15 @@ export default function FormPage() {
       setSubmitting(false);
     }
   }, [state, validate, triggerError, router]);
+
+  const handleOtroTipoSubmit = useCallback(() => {
+    if (!otroProducto.trim()) {
+      triggerError();
+      return;
+    }
+    dispatch({ type: 'SET_FIELD', field: 'tipo_producto', value: `Otro — ${otroProducto.trim()}` });
+    advance();
+  }, [otroProducto, triggerError, advance]);
 
   const handleReferidoSubmit = useCallback(() => {
     if (!referidoPor.trim()) {
@@ -375,14 +387,39 @@ export default function FormPage() {
                   <RadioCard
                     key={opt}
                     label={opt}
-                    selected={state.tipo_producto === opt}
+                    selected={
+                      state.tipo_producto === opt ||
+                      (opt === OTRO_TIPO_LABEL && state.tipo_producto.startsWith('Otro —'))
+                    }
                     onSelect={() => {
                       dispatch({ type: 'SET_FIELD', field: 'tipo_producto', value: opt });
-                      setTimeout(advance, 120);
+                      if (opt !== OTRO_TIPO_LABEL) setTimeout(advance, 120);
                     }}
                   />
                 ))}
               </div>
+              {state.tipo_producto === OTRO_TIPO_LABEL && (
+                <div style={{ marginTop: '1.25rem' }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.85rem',
+                      color: '#666',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
+                    ¿A qué se dedica tu negocio o empresa?
+                  </label>
+                  <TextInput
+                    value={otroProducto}
+                    onChange={setOtroProducto}
+                    onEnter={handleOtroTipoSubmit}
+                    placeholder="Describe brevemente a qué se dedica"
+                    error={error && !otroProducto.trim()}
+                    autoFocus
+                  />
+                </div>
+              )}
             </StepWrapper>
           )}
 
@@ -603,6 +640,19 @@ export default function FormPage() {
                 }}
               >
                 Omitir esta pregunta →
+              </button>
+            </div>
+          )}
+
+          {/* Continuar button when "Otro" tipo_producto needs a description */}
+          {step === 7 && state.tipo_producto === OTRO_TIPO_LABEL && (
+            <div style={{ marginTop: '2rem' }}>
+              <button
+                className="btn-primary"
+                onClick={handleOtroTipoSubmit}
+                style={{ minWidth: 180 }}
+              >
+                Continuar →
               </button>
             </div>
           )}

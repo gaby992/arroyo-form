@@ -67,26 +67,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Error al guardar' }, { status: 500 });
   }
 
-  let sheets_synced = false;
   const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
   if (webhookUrl) {
-    try {
-      const sheetPayload = {
-        ...body,
-        canales: (body.canales as string[]).join(', '),
-        funciones: (body.funciones as string[]).join(', '),
-        created_at: new Date().toISOString(),
-      };
-      const res = await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(sheetPayload),
-      });
-      sheets_synced = res.ok;
-    } catch (err) {
-      console.error('Google Sheets webhook error:', err);
-    }
+    const sheetPayload = {
+      ...body,
+      canales: (body.canales as string[]).join(', '),
+      funciones: (body.funciones as string[]).join(', '),
+      created_at: new Date().toISOString(),
+    };
+    fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sheetPayload),
+    }).catch((err) => console.error('Google Sheets webhook error:', err));
   }
 
-  return NextResponse.json({ success: true, sheets_synced });
+  return NextResponse.json({ success: true });
 }
