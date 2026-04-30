@@ -47,6 +47,7 @@ const TIPO_PRODUCTO_OPTIONS = [
   'Servicios profesionales (consultoría, salud, educación, etc.)',
   'Productos digitales (cursos, membresías, software)',
   'Ambos, productos y servicios',
+  'Alimentos y bebidas (restaurante, cafetería, etc.)',
 ];
 
 const CANALES_OPTIONS = [
@@ -100,6 +101,7 @@ export default function FormPage() {
   const [error, setError] = useState(false);
   const [stepKey, setStepKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [referidoPor, setReferidoPor] = useState('');
   const errorTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const triggerError = useCallback(() => {
@@ -172,9 +174,17 @@ export default function FormPage() {
     }
   }, [state, validate, triggerError, router]);
 
-  // Step 12 auto-submits after fuente selection
+  const handleReferidoSubmit = useCallback(() => {
+    if (!referidoPor.trim()) {
+      triggerError();
+      return;
+    }
+    dispatch({ type: 'SET_FIELD', field: 'fuente', value: `Me lo recomendaron — ${referidoPor.trim()}` });
+  }, [referidoPor, triggerError]);
+
+  // Step 12 auto-submits after fuente selection (except "Me lo recomendaron" — needs a name first)
   useEffect(() => {
-    if (step === 12 && state.fuente && !submitting) {
+    if (step === 12 && state.fuente && state.fuente !== 'Me lo recomendaron' && !submitting) {
       handleSubmit();
     }
   }, [state.fuente]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -525,7 +535,7 @@ export default function FormPage() {
                   <RadioCard
                     key={opt}
                     label={opt}
-                    selected={state.fuente === opt}
+                    selected={state.fuente === opt || (opt === 'Me lo recomendaron' && state.fuente.startsWith('Me lo recomendaron'))}
                     onSelect={() => {
                       if (submitting) return;
                       dispatch({ type: 'SET_FIELD', field: 'fuente', value: opt });
@@ -533,6 +543,28 @@ export default function FormPage() {
                   />
                 ))}
               </div>
+              {state.fuente === 'Me lo recomendaron' && (
+                <div style={{ marginTop: '1.25rem' }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.85rem',
+                      color: '#666',
+                      marginBottom: '0.4rem',
+                    }}
+                  >
+                    ¿Quién te recomendó? (nombre de la persona)
+                  </label>
+                  <TextInput
+                    value={referidoPor}
+                    onChange={setReferidoPor}
+                    onEnter={handleReferidoSubmit}
+                    placeholder="Nombre de quien te recomendó"
+                    error={error && !referidoPor.trim()}
+                    autoFocus
+                  />
+                </div>
+              )}
             </StepWrapper>
           )}
 
@@ -571,6 +603,19 @@ export default function FormPage() {
                 }}
               >
                 Omitir esta pregunta →
+              </button>
+            </div>
+          )}
+
+          {/* Submit button when referral name is needed */}
+          {step === 12 && state.fuente === 'Me lo recomendaron' && !submitting && (
+            <div style={{ marginTop: '2rem' }}>
+              <button
+                className="btn-primary"
+                onClick={handleReferidoSubmit}
+                style={{ minWidth: 180 }}
+              >
+                Enviar →
               </button>
             </div>
           )}
